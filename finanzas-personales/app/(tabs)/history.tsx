@@ -1,13 +1,13 @@
+import { useTheme } from '@/context/theme-context';
 import React from 'react';
-import { View, Text, StyleSheet } from 'react-native';
+import { StyleSheet, Text, View } from 'react-native';
 
 export default function HistoryScreen() {
+    const { isDarkMode } = useTheme();
+
     return (
-        <View style={styles.container}>
-            <Text style={styles.text}>Historial de Transacciones</Text>
-            <Text style={styles.subtext}>
-                (Brandon: Aquí se integrará AsyncStorage para cargar el historial de transacciones y los filtros por mes/semana)
-            </Text>
+        <View style={[styles.container, { backgroundColor: isDarkMode ? '#121212' : '#F5F5F5' }]}>
+            <Text style={[styles.text, { color: isDarkMode ? '#FFF' : '#121212' }]}>Historial de Transacciones</Text>
         </View>
     );
 }
@@ -15,19 +15,16 @@ export default function HistoryScreen() {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: '#121212',
         justifyContent: 'center',
         alignItems: 'center',
         padding: 20,
     },
     text: {
-        color: '#FFF',
         fontSize: 24,
         fontWeight: 'bold',
         marginBottom: 20,
     },
     subtext: {
-        color: '#888',
         fontSize: 16,
         textAlign: 'center',
     }

@@ -1,8 +1,9 @@
-import React, { useEffect } from 'react';
-import { View, Text, StyleSheet, ScrollView, Dimensions } from 'react-native';
+import { useTheme } from '@/context/theme-context';
+import { ArrowDownRight, ArrowUpRight, Wallet } from 'lucide-react-native';
+import React from 'react';
+import { Dimensions, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { LineChart } from 'react-native-chart-kit';
 import Animated, { FadeInUp } from 'react-native-reanimated';
-import { ArrowUpRight, ArrowDownRight, Wallet } from 'lucide-react-native';
 
 const screenWidth = Dimensions.get('window').width;
 
@@ -19,53 +20,63 @@ const data = {
 };
 
 export default function DashboardScreen() {
+  const { isDarkMode } = useTheme();
+
+  const containerBg = isDarkMode ? '#121212' : '#F5F5F5';
+  const cardBg = isDarkMode ? '#1E1E1E' : '#FFFFFF';
+  const textColor = isDarkMode ? '#FFF' : '#121212';
+  const subtextColor = isDarkMode ? '#888' : '#666';
+  const chartBg = isDarkMode ? '#1E1E1E' : '#FFFFFF';
+  const chartGradFrom = isDarkMode ? '#1E1E1E' : '#F0F0F0';
+  const chartGradTo = isDarkMode ? '#121212' : '#E5E5E5';
+
   return (
-    <ScrollView style={styles.container}>
-      <Animated.View entering={FadeInUp.delay(100).springify()} style={styles.card}>
+    <ScrollView style={[styles.container, { backgroundColor: containerBg }]}>
+      <Animated.View entering={FadeInUp.delay(100).springify()} style={[styles.card, { backgroundColor: cardBg }]}>
         <View style={styles.balanceHeader}>
           <Wallet color="#00D084" size={32} />
           <View style={styles.balanceTextContainer}>
-            <Text style={styles.balanceLabel}>Balance Actual</Text>
-            <Text style={styles.balanceAmount}>$4,250.00</Text>
+            <Text style={[styles.balanceLabel, { color: subtextColor }]}>Balance Actual</Text>
+            <Text style={[styles.balanceAmount, { color: textColor }]}>$4,250.00</Text>
           </View>
         </View>
       </Animated.View>
 
       <View style={styles.statsRow}>
-        <Animated.View entering={FadeInUp.delay(200).springify()} style={[styles.statCard, { marginRight: 10 }]}>
+        <Animated.View entering={FadeInUp.delay(200).springify()} style={[styles.statCard, { marginRight: 10, backgroundColor: cardBg }]}>
           <View style={styles.iconContainerIn}>
             <ArrowUpRight color="#00D084" size={20} />
           </View>
-          <Text style={styles.statLabel}>Ingresos</Text>
+          <Text style={[styles.statLabel, { color: subtextColor }]}>Ingresos</Text>
           <Text style={styles.statAmountIn}>+$3,500.00</Text>
         </Animated.View>
-        <Animated.View entering={FadeInUp.delay(300).springify()} style={styles.statCard}>
+        <Animated.View entering={FadeInUp.delay(300).springify()} style={[styles.statCard, { backgroundColor: cardBg }]}>
           <View style={styles.iconContainerOut}>
             <ArrowDownRight color="#FF4B4B" size={20} />
           </View>
-          <Text style={styles.statLabel}>Gastos</Text>
+          <Text style={[styles.statLabel, { color: subtextColor }]}>Gastos</Text>
           <Text style={styles.statAmountOut}>-$1,250.00</Text>
         </Animated.View>
       </View>
 
-      <Animated.View entering={FadeInUp.delay(400).springify()} style={styles.chartContainer}>
-        <Text style={styles.sectionTitle}>Evolución Anual</Text>
+      <Animated.View entering={FadeInUp.delay(400).springify()} style={[styles.chartContainer, { backgroundColor: cardBg }]}>
+        <Text style={[styles.sectionTitle, { color: textColor }]}>Evolución Anual</Text>
         <LineChart
           data={data}
           width={screenWidth - 40}
           height={220}
           chartConfig={{
-            backgroundColor: "#1E1E1E",
-            backgroundGradientFrom: "#1E1E1E",
-            backgroundGradientTo: "#121212",
+            backgroundColor: chartBg,
+            backgroundGradientFrom: chartGradFrom,
+            backgroundGradientTo: chartGradTo,
             decimalPlaces: 0,
-            color: (opacity = 1) => `rgba(255, 255, 255, ${opacity})`,
-            labelColor: (opacity = 1) => `rgba(255, 255, 255, ${opacity})`,
+            color: (opacity = 1) => isDarkMode ? `rgba(255, 255, 255, ${opacity})` : `rgba(0, 0, 0, ${opacity})`,
+            labelColor: (opacity = 1) => isDarkMode ? `rgba(255, 255, 255, ${opacity})` : `rgba(0, 0, 0, ${opacity})`,
             style: { borderRadius: 16 },
             propsForDots: {
               r: "6",
               strokeWidth: "2",
-              stroke: "#1E1E1E"
+              stroke: chartBg
             }
           }}
           bezier
@@ -79,11 +90,9 @@ export default function DashboardScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#121212',
     padding: 20,
   },
   card: {
-    backgroundColor: '#1E1E1E',
     borderRadius: 20,
     padding: 24,
     marginBottom: 20,
@@ -101,12 +110,10 @@ const styles = StyleSheet.create({
     marginLeft: 15,
   },
   balanceLabel: {
-    color: '#888',
     fontSize: 16,
     fontWeight: '500',
   },
   balanceAmount: {
-    color: '#FFF',
     fontSize: 36,
     fontWeight: 'bold',
     marginTop: 4,
@@ -118,7 +125,6 @@ const styles = StyleSheet.create({
   },
   statCard: {
     flex: 1,
-    backgroundColor: '#1E1E1E',
     borderRadius: 20,
     padding: 20,
     shadowColor: '#000',
@@ -142,7 +148,6 @@ const styles = StyleSheet.create({
     marginBottom: 10,
   },
   statLabel: {
-    color: '#888',
     fontSize: 14,
     marginBottom: 5,
   },
@@ -157,14 +162,12 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
   },
   chartContainer: {
-    backgroundColor: '#1E1E1E',
     borderRadius: 20,
     padding: 20,
     paddingBottom: 30,
     marginBottom: 40,
   },
   sectionTitle: {
-    color: '#FFF',
     fontSize: 20,
     fontWeight: '600',
     marginBottom: 20,
