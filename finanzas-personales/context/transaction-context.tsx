@@ -7,6 +7,8 @@ export type Transaction = {
   amount: number;
   type: 'income' | 'expense';
   date: string;
+  time: string;
+  recipient: string;
 };
 
 type TransactionContextType = {

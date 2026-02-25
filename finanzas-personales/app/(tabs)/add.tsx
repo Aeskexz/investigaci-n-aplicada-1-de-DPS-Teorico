@@ -1,20 +1,20 @@
-import { useTheme } from '@/context/theme-context';
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
-import { ArrowDownCircle, ArrowUpCircle, Calendar, Tag, Type } from 'lucide-react-native';
+import { useTheme } from '@/context/theme-context';
+import { useTransactions } from '@/context/transaction-context';
+import { ArrowDownCircle, ArrowUpCircle, Calendar, Clock, Tag, Type } from 'lucide-react-native';
 import React, { useState } from 'react';
-import { 
-  StyleSheet, 
-  TextInput, 
-  TouchableOpacity, 
-  ScrollView,
-  KeyboardAvoidingView,
-  Platform,
-  Alert,
-  View
+import {
+    Alert,
+    KeyboardAvoidingView,
+    Platform,
+    ScrollView,
+    StyleSheet,
+    TextInput,
+    TouchableOpacity,
+    View
 } from 'react-native';
 import Animated, { FadeInUp } from 'react-native-reanimated';
-import { useTransactions } from '@/context/transaction-context';
 
 type TransactionType = 'income' | 'expense';
 
@@ -23,8 +23,9 @@ export default function AddTransactionScreen() {
   const [type, setType] = useState<TransactionType>('income');
   const [title, setTitle] = useState('');
   const [amount, setAmount] = useState('');
-  const [category, setCategory] = useState('');
+  const [recipient, setRecipient] = useState('');
   const [date, setDate] = useState(new Date().toLocaleDateString('es-ES'));
+  const [time, setTime] = useState(new Date().toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' }));
   const { addTransaction } = useTransactions();
   
 
@@ -53,6 +54,8 @@ export default function AddTransactionScreen() {
     amount: Number(amount),
     type,
     date,
+    time,
+    recipient,
   };
 
   addTransaction(newTransaction);
@@ -61,7 +64,7 @@ export default function AddTransactionScreen() {
 
   setTitle('');
   setAmount('');
-  setCategory('');
+  setRecipient('');
   setType('income');
 };
 
@@ -173,8 +176,23 @@ export default function AddTransactionScreen() {
                 style={[styles.input, { color: textColor }]}
                 placeholder="Agrege el nombre del destinatario..."
                 placeholderTextColor={subtextColor}
-                value={category}
-                onChangeText={setCategory}
+                value={recipient}
+                onChangeText={setRecipient}
+              />
+            </View>
+
+            {/* Hora */}
+            <ThemedText type="defaultSemiBold" style={[styles.label, { color: subtextColor }]}>
+              Hora
+            </ThemedText>
+            <View style={[styles.inputContainer, { backgroundColor: inputBg }]}>
+              <Clock color={subtextColor} size={20} />
+              <TextInput
+                style={[styles.input, { color: textColor }]}
+                placeholder="HH:MM"
+                placeholderTextColor={subtextColor}
+                value={time}
+                onChangeText={setTime}
               />
             </View>
 

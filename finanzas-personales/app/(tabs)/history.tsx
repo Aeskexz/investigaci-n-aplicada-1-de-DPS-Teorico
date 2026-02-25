@@ -1,25 +1,27 @@
-import { useTheme } from '@/context/theme-context';
-import { ArrowDownCircle, ArrowUpCircle } from 'lucide-react-native';
-import React from 'react';
-import {
-  StyleSheet,
-  View,
-  FlatList,
-  TouchableOpacity,
-  Alert,
-} from 'react-native';
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
+import { useTheme } from '@/context/theme-context';
 import { useTransactions } from '@/context/transaction-context';
+import { ArrowDownCircle, ArrowUpCircle } from 'lucide-react-native';
+import React, { useState } from 'react';
+import {
+  Alert,
+  FlatList,
+  StyleSheet,
+  TouchableOpacity,
+  View,
+} from 'react-native';
 
 export default function HistoryScreen() {
   const { isDarkMode } = useTheme();
   const { transactions, deleteTransaction } = useTransactions();
+  const [expandedId, setExpandedId] = useState<string | null>(null);
 
   const containerBg = isDarkMode ? '#121212' : '#F5F5F5';
   const cardBg = isDarkMode ? '#1E1E1E' : '#FFFFFF';
   const textColor = isDarkMode ? '#FFF' : '#121212';
   const subtextColor = isDarkMode ? '#888' : '#666';
+  const buttonBg = isDarkMode ? '#2A2A2A' : '#F0F0F0';
 
   return (
     <ThemedView style={[styles.container, { backgroundColor: containerBg }]}>
@@ -88,6 +90,65 @@ export default function HistoryScreen() {
                 </ThemedText>
               </TouchableOpacity>
             </View>
+
+            {expandedId === item.id && (
+              <View style={[styles.detailsContainer, { borderTopColor: subtextColor }]}>
+                <View style={styles.detailRow}>
+                  <ThemedText style={[styles.detailLabel, { color: subtextColor }]}>
+                    Hora:
+                  </ThemedText>
+                  <ThemedText style={[styles.detailValue, { color: textColor }]}>
+                    {item.time}
+                  </ThemedText>
+                </View>
+
+                <View style={styles.detailRow}>
+                  <ThemedText style={[styles.detailLabel, { color: subtextColor }]}>
+                    Tipo:
+                  </ThemedText>
+                  <ThemedText style={[styles.detailValue, { color: textColor }]}>
+                    {item.type === 'income' ? 'Ingreso' : 'Gasto'}
+                  </ThemedText>
+                </View>
+
+                <View style={styles.detailRow}>
+                  <ThemedText style={[styles.detailLabel, { color: subtextColor }]}>
+                    Monto:
+                  </ThemedText>
+                  <ThemedText
+                    style={[
+                      styles.detailValue,
+                      {
+                        color: item.type === 'income' ? '#00D084' : '#FF4B4B',
+                        fontWeight: 'bold',
+                      },
+                    ]}
+                  >
+                    {item.type === 'income' ? '+' : '-'}${item.amount}
+                  </ThemedText>
+                </View>
+
+                <View style={styles.detailRow}>
+                  <ThemedText style={[styles.detailLabel, { color: subtextColor }]}>
+                    Destinatario:
+                  </ThemedText>
+                  <ThemedText style={[styles.detailValue, { color: textColor }]}>
+                    {item.recipient}
+                  </ThemedText>
+                </View>
+              </View>
+            )}
+
+            <TouchableOpacity
+              onPress={() =>
+                setExpandedId(expandedId === item.id ? null : item.id)
+              }
+              style={[styles.detailsButton, { backgroundColor: buttonBg }]}
+            >
+              <ThemedText style={[styles.detailsButtonText, { color: textColor }]}>
+                {expandedId === item.id ? 'Ocultar detalles' : 'Ver detalles'}
+              </ThemedText>
+            </TouchableOpacity>
           </ThemedView>
         )}
       />
@@ -123,5 +184,34 @@ const styles = StyleSheet.create({
   amount: {
     fontSize: 16,
     fontWeight: 'bold',
+  },
+  detailsButton: {
+    marginTop: 15,
+    paddingVertical: 10,
+    paddingHorizontal: 15,
+    borderRadius: 10,
+    alignItems: 'center',
+  },
+  detailsButtonText: {
+    fontSize: 14,
+    fontWeight: '600',
+  },
+  detailsContainer: {
+    marginTop: 15,
+    paddingTop: 15,
+    borderTopWidth: 1,
+    gap: 10,
+  },
+  detailRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+  },
+  detailLabel: {
+    fontSize: 14,
+    fontWeight: '600',
+  },
+  detailValue: {
+    fontSize: 14,
   },
 });
