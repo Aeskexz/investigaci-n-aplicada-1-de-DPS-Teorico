@@ -1,6 +1,7 @@
 import { useTheme } from '@/context/theme-context';
 import { Tabs } from 'expo-router';
 import { History, Home, PlusCircle, Settings } from 'lucide-react-native';
+import { Stack } from 'expo-router';
 
 export default function TabLayout() {
   const { isDarkMode } = useTheme();

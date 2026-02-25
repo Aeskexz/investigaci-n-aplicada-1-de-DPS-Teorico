@@ -14,6 +14,7 @@ import {
   View
 } from 'react-native';
 import Animated, { FadeInUp } from 'react-native-reanimated';
+import { useTransactions } from '@/context/transaction-context';
 
 type TransactionType = 'income' | 'expense';
 
@@ -24,6 +25,8 @@ export default function AddTransactionScreen() {
   const [amount, setAmount] = useState('');
   const [category, setCategory] = useState('');
   const [date, setDate] = useState(new Date().toLocaleDateString('es-ES'));
+  const { addTransaction } = useTransactions();
+  
 
   const containerBg = isDarkMode ? '#121212' : '#F5F5F5';
   const cardBg = isDarkMode ? '#1E1E1E' : '#FFFFFF';
@@ -33,25 +36,34 @@ export default function AddTransactionScreen() {
   const incomeActiveBg = isDarkMode ? 'rgba(0, 208, 132, 0.2)' : 'rgba(0, 208, 132, 0.1)';
   const expenseActiveBg = isDarkMode ? 'rgba(255, 75, 75, 0.2)' : 'rgba(255, 75, 75, 0.1)';
 
-  const handleSave = () => {
-    if (!title.trim()) {
-      Alert.alert('Error', 'Por favor ingresa un título');
-      return;
-    }
-    if (!amount.trim() || isNaN(Number(amount)) || Number(amount) <= 0) {
-      Alert.alert('Error', 'Por favor ingresa un monto válido');
-      return;
-    }
-    
-    // Aquí iría la lógica para guardar la transacción
-    Alert.alert('Éxito', 'Transacción guardada correctamente');
-    
-    // Limpiar el formulario
-    setTitle('');
-    setAmount('');
-    setCategory('');
-    setType('income');
+ const handleSave = () => {
+  if (!title.trim()) {
+    Alert.alert('Error', 'Por favor ingresa un título');
+    return;
+  }
+
+  if (!amount.trim() || isNaN(Number(amount)) || Number(amount) <= 0) {
+    Alert.alert('Error', 'Por favor ingresa un monto válido');
+    return;
+  }
+
+  const newTransaction = {
+    id: Date.now().toString(),
+    title,
+    amount: Number(amount),
+    type,
+    date,
   };
+
+  addTransaction(newTransaction);
+
+  Alert.alert('Éxito', 'Transacción guardada correctamente');
+
+  setTitle('');
+  setAmount('');
+  setCategory('');
+  setType('income');
+};
 
   return (
     <KeyboardAvoidingView 
